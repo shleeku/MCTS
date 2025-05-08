@@ -50,10 +50,11 @@ def play_loop(env, agent, opponent, num_episodes=10, max_steps=50):
 class TreeNode:
     def __init__(self, id):
         self.id = id
-        self.value = 0
+        self.total = 0
         self.visits = 0
         self.prob = 0
         self.children = []
+        self.parent = None
 
     def add_child(self, node):
         self.children.append(node)
@@ -70,9 +71,20 @@ class MCTS():
         self.tree = TreeNode("root")
         self.num_simulations = num_simulations
 
+    def UCB1(self, node):
+        if node.visits == 0:
+            return float('inf')
+        else:
+            return node.total / node.visits + np.sqrt(2 * np.log(node.parent.visits) / node.visits)
     def select(self, current_node):
         if len(current_node.children) == 0:
             self.expand(current_node)
+        else:
+            best_child = max(current_node.children, key=self.UCB1)
+            if best_child.visits == 0:
+                return best_child
+            else:
+                return self.select(best_child)
     def expand(self, current_node):
         possible_actions = self.env.get_valid_actions()
         if len(possible_actions) == 0:
@@ -80,6 +92,7 @@ class MCTS():
         else:
             for action in possible_actions:
                 child_node = TreeNode(action)
+                child_node.parent = current_node
                 current_node.add_child(child_node)
             return current_node.children[0]
     def search(self, state):
