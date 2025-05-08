@@ -66,8 +66,10 @@ class TreeNode:
         return ret
 
 class MCTS():
-    def __init__(self, env, num_simulations=10):
+    def __init__(self, env, agent, opponent, num_simulations=10):
         self.env = env
+        self.agent = agent
+        self.opponent = opponent
         self.tree = TreeNode("root")
         self.num_simulations = num_simulations
 
