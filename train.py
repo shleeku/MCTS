@@ -101,13 +101,18 @@ class MCTS():
         for _ in range(self.num_simulations):
             self.simulate(state)
 
-    def simulate(self, state):
+    def simulate(self, current_node):
         # Simulate a random game from the given state
         while not self.env.done:
             valid_actions = self.env.get_valid_actions()
             action = random.choice(valid_actions)
-            state, _, done = self.env.step(action, 1)
+            state, reward, done = self.env.step(action, 1)
             if done:
+                if reward == 1:
+                    current_node.total += 1
+
+                elif reward == -1:
+                    current_node.total -= 1
                 break
 
 if __name__ == "__main__":
