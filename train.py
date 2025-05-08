@@ -80,13 +80,13 @@ class MCTS():
             return node.total / node.visits + np.sqrt(2 * np.log(node.parent.visits) / node.visits)
     def select(self, current_node):
         if len(current_node.children) == 0:
-            self.expand(current_node)
+            if current_node.visits == 0:
+                return current_node
+            else:
+                return self.expand(current_node)
         else:
             best_child = max(current_node.children, key=self.UCB1)
-            if best_child.visits == 0:
-                return best_child
-            else:
-                return self.select(best_child)
+            return self.select(best_child)
     def expand(self, current_node):
         possible_actions = self.env.get_valid_actions()
         if len(possible_actions) == 0:
