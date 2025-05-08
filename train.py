@@ -110,9 +110,18 @@ class MCTS():
             if done:
                 if reward == 1:
                     current_node.total += 1
-
+                    current_node.visits += 1
+                    while current_node.parent is not None:
+                        current_node = current_node.parent
+                        current_node.total += 1
+                        current_node.visits += 1
                 elif reward == -1:
                     current_node.total -= 1
+                    current_node.visits += 1
+                    while current_node.parent is not None:
+                        current_node = current_node.parent
+                        current_node.total -= 1
+                        current_node.visits += 1
                 break
 
 if __name__ == "__main__":
