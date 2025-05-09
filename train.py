@@ -70,7 +70,7 @@ class MCTS():
         self.env = env
         self.agent = agent
         self.opponent = opponent
-        self.tree = TreeNode("root")
+        self.root = TreeNode("root")
         self.num_simulations = num_simulations
 
     def UCB1(self, node):
@@ -97,9 +97,10 @@ class MCTS():
                 child_node.parent = current_node
                 current_node.add_child(child_node)
             return current_node.children[0]
-    def search(self, state):
+    def search(self):
         for _ in range(self.num_simulations):
-            self.simulate(state)
+            current_node = self.select(self.root)
+            self.simulate(current_node)
 
     def simulate(self, current_node):
         # Simulate a random game from the given state
