@@ -91,8 +91,9 @@ class MCTS():
             self.simulate(current_node)
 
     def simulate(self, current_node):
-        # Simulate a random game from the given state
-        current_player = current_node.depth % 2
+        # current_player = current_node.depth % 2
+        # print("original current node depth: ", current_node.depth)
+        # print("current player: ", current_player)
         num_moves = len([i for i in self.env.state if i != 0])
         next_player = num_moves % 2
         # print("START SIMULATION")
@@ -114,7 +115,7 @@ class MCTS():
                     current_node.visits += 1
                     while current_node.parent is not None:
                         current_node = current_node.parent
-                        if current_node.depth % 2 == current_player:
+                        if current_node.depth % 2 == 1:
                             current_node.total += 1
                         else:
                             current_node.total -= 1
@@ -124,7 +125,7 @@ class MCTS():
                     current_node.visits += 1
                     while current_node.parent is not None:
                         current_node = current_node.parent
-                        if current_node.depth % 2 == current_player:
+                        if current_node.depth % 2 == 1:
                             current_node.total -= 1
                         else:
                             current_node.total += 1
