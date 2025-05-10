@@ -9,43 +9,6 @@ import wandb
 from tqdm import tqdm
 from tictactoe import TicTacToeEnv, TicTacToeAgent
 
-def play_loop(env, agent, opponent, num_episodes=10, max_steps=50):
-    agent_wins = 0
-    opponent_wins = 0
-    draws = 0
-    for episode in range(num_episodes):
-        state = env.reset()
-        done = False
-        for step in range(max_steps):
-
-            action = agent.act(state)
-            next_state, reward, done = env.step(action, 1)
-            env.render()
-            state = next_state
-            if done:
-                if reward == 1:
-                    agent_wins += 1
-                elif reward == -1:
-                    opponent_wins += 1
-                else:
-                    draws += 1
-                print("Game Over! Winner: ", "Agent" if reward == 1 else "Opponent" if reward == -1 else "Draw")
-                break
-            action = opponent.act(state)
-            next_state, reward, done = env.step(action, -1)
-            env.render()
-            state = next_state
-            if done:
-                if reward == 1:
-                    agent_wins += 1
-                elif reward == -1:
-                    opponent_wins += 1
-                else:
-                    draws += 1
-                print("Game Over! Winner: ", "Agent" if reward == 1 else "Opponent" if reward == -1 else "Draw")
-                break
-        print("agent wins: ", agent_wins, "opponent wins: ", opponent_wins, "draws: ", draws)
-        print(f"Episode {episode+1}/{num_episodes} finished after {step+1} steps.")
 
 class TreeNode:
     def __init__(self, id):
@@ -67,10 +30,8 @@ class TreeNode:
         return ret
 
 class MCTS():
-    def __init__(self, env, agent, opponent, num_simulations=10):
+    def __init__(self, env, num_simulations=10):
         self.env = env
-        self.agent = agent
-        self.opponent = opponent
         self.root = TreeNode("root")
         self.num_simulations = num_simulations
         self.current_root = self.root
@@ -134,9 +95,88 @@ class MCTS():
                             current_node.total += 1
                         current_node.visits += 1
                 break
+    def best_action(self):
+        best_child = max(self.root.children, key=lambda x: x.visits)
+        return best_child.id
+
+def agent_vs_opponent(env, agent, opponent, num_episodes=20, max_steps=50):
+    agent_wins = 0
+    opponent_wins = 0
+    draws = 0
+    for episode in range(num_episodes):
+        state = env.reset()
+        done = False
+        for step in range(max_steps):
+            action = agent.act(state)
+            next_state, reward, done = env.step(action, 1)
+            env.render()
+            state = next_state
+            if done:
+                if reward == 1:
+                    agent_wins += 1
+                elif reward == -1:
+                    opponent_wins += 1
+                else:
+                    draws += 1
+                print("Game Over! Winner: ", "Agent" if reward == 1 else "Opponent" if reward == -1 else "Draw")
+                break
+            action = opponent.act(state)
+            next_state, reward, done = env.step(action, -1)
+            env.render()
+            state = next_state
+            if done:
+                if reward == 1:
+                    agent_wins += 1
+                elif reward == -1:
+                    opponent_wins += 1
+                else:
+                    draws += 1
+                print("Game Over! Winner: ", "Agent" if reward == 1 else "Opponent" if reward == -1 else "Draw")
+                break
+        print("agent wins: ", agent_wins, "opponent wins: ", opponent_wins, "draws: ", draws)
+        print(f"Episode {episode+1}/{num_episodes} finished after {step+1} steps.")
+
+def agent_vs_singleuseMCTS(env, agent, num_episodes=20, max_steps=50):
+    agent_wins = 0
+    opponent_wins = 0
+    draws = 0
+    for episode in range(num_episodes):
+        state = env.reset()
+        done = False
+        for step in range(max_steps):
+            action = agent.act(state)
+            next_state, reward, done = env.step(action, 1)
+            env.render()
+            state = next_state
+            if done:
+                if reward == 1:
+                    agent_wins += 1
+                elif reward == -1:
+                    opponent_wins += 1
+                else:
+                    draws += 1
+                print("Game Over! Winner: ", "Agent" if reward == 1 else "Opponent" if reward == -1 else "Draw")
+                break
+            singleuseMCTS = MCTS(env)
+            singleuseMCTS.search()
+            action = singleuseMCTS.best_action()
+            next_state, reward, done = env.step(action, -1)
+            env.render()
+            state = next_state
+            if done:
+                if reward == 1:
+                    agent_wins += 1
+                elif reward == -1:
+                    opponent_wins += 1
+                else:
+                    draws += 1
+                print("Game Over! Winner: ", "Agent" if reward == 1 else "Opponent" if reward == -1 else "Draw")
+                break
+        print("agent wins: ", agent_wins, "opponent wins: ", opponent_wins, "draws: ", draws)
+        print(f"Episode {episode+1}/{num_episodes} finished after {step+1} steps.")
 
 if __name__ == "__main__":
     game = TicTacToeEnv()
     agent = TicTacToeAgent(game)
     opponent = TicTacToeAgent(game)
-    play_loop(game, agent, opponent)
+    agent_vs_singleuseMCTS(game, agent)
