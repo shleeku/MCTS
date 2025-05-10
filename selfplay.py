@@ -37,6 +37,8 @@ class MCTS():
         self.env.state = copy.deepcopy(env.state)
         self.env.done = False
         self.root = TreeNode("root")
+        num_moves = len([i for i in self.env.state if i != 0])
+        self.root.depth = num_moves
         self.num_simulations = num_simulations
         self.current_root = self.root
 
@@ -110,21 +112,26 @@ class MCTS():
             # print("State: ", self.env.state)
             # print("Done: ", done)
             if done:
+                print("reward: ", reward)
                 if reward == 1:
+                    print("Current node: ", current_node)
                     current_node.total += 1
                     current_node.visits += 1
                     while current_node.parent is not None:
                         current_node = current_node.parent
+                        print("Current node: ", current_node)
                         if current_node.depth % 2 == 1:
                             current_node.total += 1
                         else:
                             current_node.total -= 1
                         current_node.visits += 1
                 elif reward == -1:
+                    print("Current node: ", current_node)
                     current_node.total -= 1
                     current_node.visits += 1
                     while current_node.parent is not None:
                         current_node = current_node.parent
+                        print("Current node: ", current_node)
                         if current_node.depth % 2 == 1:
                             current_node.total -= 1
                         else:
