@@ -114,29 +114,29 @@ class MCTS():
             if done:
                 print("reward: ", reward)
                 if reward == 1:
-                    print("Current node: ", current_node)
                     current_node.total += 1
                     current_node.visits += 1
+                    print("Current node: ", current_node)
                     while current_node.parent is not None:
                         current_node = current_node.parent
-                        print("Current node: ", current_node)
                         if current_node.depth % 2 == 1:
                             current_node.total += 1
                         else:
                             current_node.total -= 1
                         current_node.visits += 1
+                        print("Current node: ", current_node)
                 elif reward == -1:
-                    print("Current node: ", current_node)
                     current_node.total -= 1
                     current_node.visits += 1
+                    print("Current node: ", current_node)
                     while current_node.parent is not None:
                         current_node = current_node.parent
-                        print("Current node: ", current_node)
                         if current_node.depth % 2 == 1:
                             current_node.total -= 1
                         else:
                             current_node.total += 1
                         current_node.visits += 1
+                        print("Current node: ", current_node)
                 else:
                     current_node.total += 0
                     current_node.visits += 1
