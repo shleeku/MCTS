@@ -31,7 +31,7 @@ class TreeNode:
         return ret
 
 class MCTS():
-    def __init__(self, env, num_simulations=10):
+    def __init__(self, env, num_simulations=100):
         self.original_state = copy.deepcopy(env.state)
         self.env = TicTacToeEnv()
         self.env.state = copy.deepcopy(env.state)
@@ -115,6 +115,7 @@ class MCTS():
             # print("Done: ", done)
             if done:
                 self.backpropagate(current_node, reward)
+                break
 
     def backpropagate(self, current_node, reward):
         print("reward: ", reward)
@@ -155,7 +156,7 @@ class MCTS():
                 current_node = current_node.parent
                 current_node.total += 0
                 current_node.visits += 1
-        break
+
     def best_action(self):
         print("Current root: ", self.current_root)
         best_child = max(self.current_root.children, key=lambda x: x.visits)
