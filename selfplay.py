@@ -31,7 +31,7 @@ class TreeNode:
         return ret
 
 class MCTS():
-    def __init__(self, env, num_simulations=100):
+    def __init__(self, env, num_simulations=50):
         self.original_state = copy.deepcopy(env.state)
         self.env = TicTacToeEnv()
         self.env.state = copy.deepcopy(env.state)
