@@ -55,6 +55,7 @@ class TreeNode:
         self.prob = 0
         self.children = []
         self.parent = None
+        self.depth = 0
 
     def add_child(self, node):
         self.children.append(node)
@@ -72,6 +73,7 @@ class MCTS():
         self.opponent = opponent
         self.root = TreeNode("root")
         self.num_simulations = num_simulations
+        self.current_root = self.root
 
     def UCB1(self, node):
         if node.visits == 0:
@@ -95,16 +97,18 @@ class MCTS():
             for action in possible_actions:
                 child_node = TreeNode(action)
                 child_node.parent = current_node
+                child_node.depth = current_node.depth + 1
                 current_node.add_child(child_node)
             return current_node.children[0]
     def search(self):
         for _ in range(self.num_simulations):
-            current_node = self.select(self.root)
+            current_node = self.select(self.current_root)
             self.simulate(current_node)
 
     def simulate(self, current_node):
         # Simulate a random game from the given state
         while not self.env.done:
+            current_player = current_node.depth % 2
             valid_actions = self.env.get_valid_actions()
             action = random.choice(valid_actions)
             state, reward, done = self.env.step(action, 1)
@@ -114,14 +118,20 @@ class MCTS():
                     current_node.visits += 1
                     while current_node.parent is not None:
                         current_node = current_node.parent
-                        current_node.total += 1
+                        if current_node.depth % 2 == current_player:
+                            current_node.total += 1
+                        else:
+                            current_node.total -= 1
                         current_node.visits += 1
                 elif reward == -1:
                     current_node.total -= 1
                     current_node.visits += 1
                     while current_node.parent is not None:
                         current_node = current_node.parent
-                        current_node.total -= 1
+                        if current_node.depth % 2 == current_player:
+                            current_node.total -= 1
+                        else:
+                            current_node.total += 1
                         current_node.visits += 1
                 break
 
