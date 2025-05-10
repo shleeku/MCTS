@@ -1,12 +1,23 @@
 import torch
 from tictactoe import TicTacToeEnv, TicTacToeAgent
+from selfplay import MCTS
+
 
 game = TicTacToeEnv()
 agent = TicTacToeAgent(game)
 state = game.reset()
 done = False
+
+def MCTSmove(env):
+    singleuseMCTS = MCTS(env)
+    singleuseMCTS.search()
+    action = singleuseMCTS.best_action()
+    print("Action chosen by MCTS: ", action)
+    return action
+
 while not done:
-    action = agent.act(state)
+    # action = agent.act(state)
+    action = MCTSmove(game)
     state, reward, done = game.step(action, 1)
     game.render()
     if done:
