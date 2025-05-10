@@ -31,7 +31,7 @@ class TreeNode:
         return ret
 
 class MCTS():
-    def __init__(self, env, num_simulations=1000):
+    def __init__(self, env, num_simulations=10):
         self.original_state = copy.deepcopy(env.state)
         self.env = TicTacToeEnv()
         self.env.state = copy.deepcopy(env.state)
@@ -58,6 +58,8 @@ class MCTS():
         print("Action taken: ", action)
         state, reward, done = self.env.step(action, (-1) ** (next_player + 1))
         self.env.render()
+        if done:
+            self.backpropagate(current_node, reward)
     def select(self, current_node):
         if len(current_node.children) == 0:
             if current_node.visits == 0:
@@ -112,45 +114,48 @@ class MCTS():
             # print("State: ", self.env.state)
             # print("Done: ", done)
             if done:
-                print("reward: ", reward)
-                if reward == 1:
-                    if current_node.depth % 2 == 1:
-                        current_node.total += 1
-                    else:
-                        current_node.total -= 1
-                    current_node.visits += 1
-                    print("Current node: ", current_node)
-                    while current_node.parent is not None:
-                        current_node = current_node.parent
-                        if current_node.depth % 2 == 1:
-                            current_node.total += 1
-                        else:
-                            current_node.total -= 1
-                        current_node.visits += 1
-                        print("Current node: ", current_node)
-                elif reward == -1:
-                    if current_node.depth % 2 == 1:
-                        current_node.total -= 1
-                    else:
-                        current_node.total += 1
-                    current_node.visits += 1
-                    print("Current node: ", current_node)
-                    while current_node.parent is not None:
-                        current_node = current_node.parent
-                        if current_node.depth % 2 == 1:
-                            current_node.total -= 1
-                        else:
-                            current_node.total += 1
-                        current_node.visits += 1
-                        print("Current node: ", current_node)
+                self.backpropagate(current_node, reward)
+
+    def backpropagate(self, current_node, reward):
+        print("reward: ", reward)
+        if reward == 1:
+            if current_node.depth % 2 == 1:
+                current_node.total += 1
+            else:
+                current_node.total -= 1
+            current_node.visits += 1
+            print("Current node: ", current_node)
+            while current_node.parent is not None:
+                current_node = current_node.parent
+                if current_node.depth % 2 == 1:
+                    current_node.total += 1
                 else:
-                    current_node.total += 0
-                    current_node.visits += 1
-                    while current_node.parent is not None:
-                        current_node = current_node.parent
-                        current_node.total += 0
-                        current_node.visits += 1
-                break
+                    current_node.total -= 1
+                current_node.visits += 1
+                print("Current node: ", current_node)
+        elif reward == -1:
+            if current_node.depth % 2 == 1:
+                current_node.total -= 1
+            else:
+                current_node.total += 1
+            current_node.visits += 1
+            print("Current node: ", current_node)
+            while current_node.parent is not None:
+                current_node = current_node.parent
+                if current_node.depth % 2 == 1:
+                    current_node.total -= 1
+                else:
+                    current_node.total += 1
+                current_node.visits += 1
+                print("Current node: ", current_node)
+        else:
+            current_node.total += 0
+            current_node.visits += 1
+            while current_node.parent is not None:
+                current_node = current_node.parent
+                current_node.total += 0
+                current_node.visits += 1
+        break
     def best_action(self):
         print("Current root: ", self.current_root)
         best_child = max(self.current_root.children, key=lambda x: x.visits)
