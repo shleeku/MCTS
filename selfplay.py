@@ -65,7 +65,7 @@ class MCTS():
         else:
             best_child = max(current_node.children, key=self.UCB1)
             for child in current_node.children:
-                print("Child ID: ", child.id, "Total: ", child.total, "Visits: ", child.visits, "Prob: ", child.prob, "UCB1: ", self.UCB1(child))
+                print("Child ID: ", child.id, "Total: ", child.total, "Visits: ", child.visits, "Depth: ", child.depth, "UCB1: ", self.UCB1(child))
             print("taking action best child")
             self.take_action(best_child)
             return self.select(best_child)
