@@ -31,7 +31,7 @@ class TreeNode:
         return ret
 
 class MCTS():
-    def __init__(self, env, num_simulations=10):
+    def __init__(self, env, num_simulations=1000):
         self.original_state = copy.deepcopy(env.state)
         self.env = TicTacToeEnv()
         self.env.state = copy.deepcopy(env.state)
@@ -114,7 +114,10 @@ class MCTS():
             if done:
                 print("reward: ", reward)
                 if reward == 1:
-                    current_node.total += 1
+                    if current_node.depth % 2 == 1:
+                        current_node.total += 1
+                    else:
+                        current_node.total -= 1
                     current_node.visits += 1
                     print("Current node: ", current_node)
                     while current_node.parent is not None:
@@ -126,7 +129,10 @@ class MCTS():
                         current_node.visits += 1
                         print("Current node: ", current_node)
                 elif reward == -1:
-                    current_node.total -= 1
+                    if current_node.depth % 2 == 1:
+                        current_node.total -= 1
+                    else:
+                        current_node.total += 1
                     current_node.visits += 1
                     print("Current node: ", current_node)
                     while current_node.parent is not None:
